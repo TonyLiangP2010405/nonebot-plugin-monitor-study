@@ -73,7 +73,7 @@ cmd_off = on_command("关闭劝阻群友插件", priority=10, block=True)
 @cmd_on.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
     global plugin_monitor_status
-    if int(event.user_id) == 1287663323:
+    if event.user_id not in plugin_monitor_qq_numbers:
         plugin_monitor_status = True
         save_state(True)
         await bot.send_group_msg(group_id=event.group_id, message=Message("已开启监控"))
@@ -81,7 +81,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
 @cmd_off.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
     global plugin_monitor_status
-    if int(event.user_id) == 1287663323:
+    if event.user_id not in plugin_monitor_qq_numbers:
         plugin_monitor_status = False
         save_state(False)
         await bot.send_group_msg(group_id=event.group_id, message=Message("已关闭监控"))

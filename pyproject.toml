@@ -1,0 +1,78 @@
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[project]
+name = "nonebot-plugin-monitor-study"
+version = "0.1.0"
+description = "监控指定群友发言并调用大模型进行劝阻的 NoneBot2 插件（开关状态 JSON 持久化）"
+readme = "README.md"
+requires-python = ">=3.9, <4.0"
+license = { file = "LICENSE" }
+
+authors = [
+  { name = "TonyLiang", email = "tghrtwld@example.com" }
+]
+
+dependencies = [
+  "nonebot2>=2.4.4",
+  "nonebot-adapter-onebot>=2.4.6",
+  "nonebot-plugin-localstore>=0.6.0",
+  "httpx>=0.27.0",
+  "pydantic>=2.0.0",
+]
+
+keywords = [
+  "nonebot",
+  "nonebot2",
+  "nonebot-plugin",
+  "qqbot",
+  "onebot",
+  "onebotv11",
+  "llm",
+  "oneapi",
+  "monitor",
+]
+
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "License :: OSI Approved :: MIT License",
+  "Framework :: AsyncIO",
+  "Intended Audience :: Developers",
+  "Topic :: Communications :: Chat",
+]
+
+[project.urls]
+Homepage = "https://github.com/<你的GitHub用户名>/<你的仓库名>"
+Repository = "https://github.com/<你的GitHub用户名>/<你的仓库名>"
+Issues = "https://github.com/<你的GitHub用户名>/<你的仓库名>/issues"
+
+[project.entry-points."nonebot.plugin"]
+nonebot_plugin_monitor_study = "nonebot_plugin_monitor_study"
+
+[tool.poetry]
+packages = [
+  { include = "nonebot_plugin_monitor_study" }
+]
+
+[project.optional-dependencies]
+dev = [
+  "pyright[nodejs]",
+  "ruff",
+  "build",
+  "twine",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.format]
+line-ending = "lf"
+
+[tool.pyright]
+pythonVersion = "3.9"
+pythonPlatform = "All"
+typeCheckingMode = "standard"

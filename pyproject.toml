@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "nonebot-plugin-monitor-study"
-version = "0.1.1"
+version = "0.2.1"
 description = "监控指定群友发言并调用大模型进行劝阻的 NoneBot2 插件（开关状态 JSON 持久化）"
 readme = "README.md"
 requires-python = ">=3.9, <4.0"

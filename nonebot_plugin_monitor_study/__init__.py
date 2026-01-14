@@ -37,6 +37,7 @@ BASE_URL = (cfg.one_api_url or "").rstrip("/")
 TOKEN = cfg.one_api_token
 MODEL = cfg.one_api_model
 
+logger.warning(PROMPT)
 
 # =========================
 # Local JSON state

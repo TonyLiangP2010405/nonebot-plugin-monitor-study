@@ -5,7 +5,7 @@ import httpx
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from nonebot import get_driver, on_message, on_command, require
 from nonebot.adapters.onebot.v11 import (
     MessageSegment,
@@ -24,20 +24,35 @@ from nonebot_plugin_localstore import get_plugin_data_file  # noqa: E402
 # Config (.env)
 # =========================
 class MonitorStudyConfigure(BaseModel):
+    # 两种方式二选一：
+    # 1) prompt：直接在 .env 里放单行 prompt（不推荐放多行）
+    # 2) prompt_path：在 .env 里放 prompt 文件路径（推荐）
     prompt: str = ""
+    prompt_path: str = ""
+
     one_api_url: str = ""
     one_api_token: str = ""
     one_api_model: str = ""
-    admin: int = 0  # 修正：必须是 int
+    admin: int = 0  # 必须是 int
 
 
 cfg = MonitorStudyConfigure.model_validate(get_driver().config.model_dump())
+
+# 先取 .env 里的 prompt；如果为空，再从文件读取
 PROMPT = (cfg.prompt or "").strip()
+if not PROMPT and cfg.prompt_path:
+    try:
+        PROMPT = Path(cfg.prompt_path).expanduser().read_text(encoding="utf-8").strip()
+    except Exception as e:
+        logger.warning(f"Failed to read prompt file: {cfg.prompt_path!r}, err={e}")
+
 BASE_URL = (cfg.one_api_url or "").rstrip("/")
 TOKEN = cfg.one_api_token
 MODEL = cfg.one_api_model
 
-logger.warning(PROMPT)
+# 可选：启动时打印一下长度，避免刷屏（你不想要就删掉）
+logger.warning(f"monitor_study loaded. prompt_len={len(PROMPT)}, model={MODEL!r}, base_url={BASE_URL!r}")
+
 
 # =========================
 # Local JSON state
@@ -65,7 +80,6 @@ def _normalize_qq_list(x: Any) -> list[int]:
             for i in v:
                 walk(i)
             return
-        # 其他类型尽量转 int
         try:
             s = str(v).strip()
             if not s:
@@ -131,6 +145,7 @@ def is_admin(event: GroupMessageEvent) -> bool:
 cmd_on = on_command("开启劝阻群友插件", priority=10, block=True)
 cmd_off = on_command("关闭劝阻群友插件", priority=10, block=True)
 
+
 @cmd_on.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
     if not is_admin(event):
@@ -188,6 +203,7 @@ async def call_llm(content: str) -> str:
 # =========================
 monitor_message = on_message(priority=10, block=False)
 
+
 @monitor_message.handle()
 async def _monitor_message(event: GroupMessageEvent):
     if not _state["monitor_status"]:
@@ -211,6 +227,7 @@ async def _monitor_message(event: GroupMessageEvent):
 # =========================
 add_qq_number = on_command("添加监听群友", priority=10, block=True)
 remove_qq_number = on_command("删除监听群友", priority=10, block=True)
+
 
 @add_qq_number.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
@@ -264,6 +281,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 # List QQ numbers
 # =========================
 list_qq_numbers = on_command("查看当前监听列表", priority=10, block=True)
+
 
 @list_qq_numbers.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
